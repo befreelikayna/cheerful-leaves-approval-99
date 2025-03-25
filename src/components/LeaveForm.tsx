@@ -1,3 +1,4 @@
+
 import React, { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Employee, LeaveFormData } from "../models/employeeTypes";
@@ -56,13 +57,16 @@ const LeaveForm: React.FC = () => {
           <style>
             @page {
               size: A4;
-              margin: 0;
+              margin: 2cm;
             }
+            @import url('https://fonts.googleapis.com/css2?family=Arial:wght@400;700&display=swap');
             body {
-              font-family: "Times New Roman", serif;
+              font-family: Arial, sans-serif;
               margin: 0;
               padding: 0;
-              font-size: 11pt;
+              font-size: 14pt;
+              font-weight: bold;
+              line-height: 1.6;
             }
             .page {
               width: 21cm;
@@ -77,40 +81,44 @@ const LeaveForm: React.FC = () => {
               page-break-inside: avoid;
             }
             .title {
-              font-size: 14pt;
+              font-size: 24pt;
               font-weight: bold;
               font-style: italic;
               text-decoration: underline;
               text-align: center;
-              margin-bottom: 10px;
+              margin-bottom: 30px;
             }
             .date-line {
               text-align: right;
-              margin: 10px 0 30px 0;
+              margin: 20px 0 40px 0;
+              font-size: 16pt;
             }
             .info-section {
-              margin-bottom: 15px;
+              margin-bottom: 25px;
             }
             .info-line {
-              margin-bottom: 8px;
-              font-weight: normal;
+              margin-bottom: 15px;
+              font-size: 16pt;
             }
             .object-line {
               font-weight: bold;
-              margin: 30px 0 15px 0;
+              margin: 40px 0 25px 0;
+              font-size: 18pt;
             }
             .content {
-              margin: 15px 0;
+              margin: 25px 0;
               text-align: justify;
-              line-height: 1.3;
+              line-height: 1.6;
+              font-size: 16pt;
             }
             .signature-section {
               display: flex;
               justify-content: space-between;
-              margin-top: 50px;
+              margin-top: 80px;
             }
             .signature-box {
               width: 40%;
+              font-size: 16pt;
             }
           </style>
         </head>
