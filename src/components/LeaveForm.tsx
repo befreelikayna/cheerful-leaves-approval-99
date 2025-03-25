@@ -4,7 +4,8 @@ import { toast } from "sonner";
 import { Employee, LeaveFormData } from "../models/employeeTypes";
 import EmployeeSelect from "./EmployeeSelect";
 import { employees } from "../data/employees";
-import { Printer } from "lucide-react";
+import { Printer, Download, Edit } from "lucide-react";
+import { Button } from "./ui/button";
 
 const LeaveForm: React.FC = () => {
   const [formData, setFormData] = useState<LeaveFormData>({
@@ -15,6 +16,7 @@ const LeaveForm: React.FC = () => {
     company: "",
   });
   
+  const [isEditing, setIsEditing] = useState<boolean>(true);
   const formRef = useRef<HTMLDivElement>(null);
 
   const handleEmployeeChange = (employee: Employee | null) => {
@@ -32,24 +34,8 @@ const LeaveForm: React.FC = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handlePrint = () => {
-    if (!formData.employee) {
-      toast.error("Veuillez sélectionner un employé");
-      return;
-    }
-    
-    if (!formData.cin) {
-      toast.error("Veuillez entrer le CIN");
-      return;
-    }
-
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) {
-      toast.error("Le blocage des popups peut empêcher l'impression. Veuillez les autoriser pour ce site.");
-      return;
-    }
-
-    printWindow.document.write(`
+  const generateHtml = () => {
+    return `
       <!DOCTYPE html>
       <html>
         <head>
@@ -166,7 +152,27 @@ const LeaveForm: React.FC = () => {
           </div>
         </body>
       </html>
-    `);
+    `;
+  };
+
+  const handlePrint = () => {
+    if (!formData.employee) {
+      toast.error("Veuillez sélectionner un employé");
+      return;
+    }
+    
+    if (!formData.cin) {
+      toast.error("Veuillez entrer le CIN");
+      return;
+    }
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      toast.error("Le blocage des popups peut empêcher l'impression. Veuillez les autoriser pour ce site.");
+      return;
+    }
+
+    printWindow.document.write(generateHtml());
     
     printWindow.document.close();
     
@@ -179,68 +185,172 @@ const LeaveForm: React.FC = () => {
     
     toast.success("Document prêt pour impression");
   };
+
+  const handleDownload = () => {
+    if (!formData.employee) {
+      toast.error("Veuillez sélectionner un employé");
+      return;
+    }
+    
+    if (!formData.cin) {
+      toast.error("Veuillez entrer le CIN");
+      return;
+    }
+
+    // Create a hidden iframe to generate the PDF content
+    const iframe = document.createElement('iframe');
+    iframe.style.visibility = 'hidden';
+    iframe.style.position = 'absolute';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    document.body.appendChild(iframe);
+
+    const iframeDocument = iframe.contentDocument || iframe.contentWindow?.document;
+    if (!iframeDocument) {
+      toast.error("Impossible de créer le document");
+      document.body.removeChild(iframe);
+      return;
+    }
+
+    iframeDocument.write(generateHtml());
+    iframeDocument.close();
+
+    setTimeout(() => {
+      try {
+        const employeeName = formData.employee?.name || "document";
+        const fileName = `autorisation_conge_${employeeName.replace(/\s+/g, '_').toLowerCase()}.pdf`;
+
+        // Use browser print to save as PDF
+        iframe.contentWindow?.print();
+        
+        // Display success message
+        toast.success("Document téléchargé");
+        
+        // Clean up
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+        }, 1000);
+      } catch (error) {
+        toast.error("Erreur lors du téléchargement du document");
+        document.body.removeChild(iframe);
+      }
+    }, 500);
+  };
+
+  const toggleEdit = () => {
+    setIsEditing(!isEditing);
+    if (isEditing) {
+      toast.info("Mode aperçu activé");
+    } else {
+      toast.info("Mode édition activé");
+    }
+  };
   
   return (
     <div className="form-paper animate-slide-up" ref={formRef}>
       <h1 className="form-title">Autorisation de congé</h1>
       
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div className="form-field">
-          <label className="form-label">Fait à :</label>
-          <input
-            type="text"
-            name="location"
-            value={formData.location}
-            onChange={handleInputChange}
-            className="form-input"
-            placeholder="Lieu"
-          />
-        </div>
-        
-        <div className="form-field">
-          <label className="form-label">Le :</label>
-          <input
-            type="text"
-            name="date"
-            value={formData.date}
-            onChange={handleInputChange}
-            className="form-input"
-            placeholder="Date"
-          />
-        </div>
-      </div>
-      
-      <div className="form-field mb-6">
-        <label className="form-label">Nom Et Prénom :</label>
-        <EmployeeSelect
-          employees={employees}
-          value={formData.employee}
-          onChange={handleEmployeeChange}
-          className="mb-4"
-        />
-        
-        <label className="form-label">CIN :</label>
-        <input
-          type="text"
-          name="cin"
-          value={formData.cin}
-          onChange={handleInputChange}
-          className="form-input"
-          placeholder="Numéro de CIN"
-        />
-      </div>
-      
-      <div className="form-field mb-6">
-        <label className="form-label">Entreprise :</label>
-        <input
-          type="text"
-          name="company"
-          value={formData.company}
-          onChange={handleInputChange}
-          className="form-input"
-          placeholder="Nom de l'entreprise"
-        />
-      </div>
+      {isEditing ? (
+        <>
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="form-field">
+              <label className="form-label">Fait à :</label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleInputChange}
+                className="form-input"
+                placeholder="Lieu"
+              />
+            </div>
+            
+            <div className="form-field">
+              <label className="form-label">Le :</label>
+              <input
+                type="text"
+                name="date"
+                value={formData.date}
+                onChange={handleInputChange}
+                className="form-input"
+                placeholder="Date"
+              />
+            </div>
+          </div>
+          
+          <div className="form-field mb-6">
+            <label className="form-label">Nom Et Prénom :</label>
+            <EmployeeSelect
+              employees={employees}
+              value={formData.employee}
+              onChange={handleEmployeeChange}
+              className="mb-4"
+            />
+            
+            <label className="form-label">CIN :</label>
+            <input
+              type="text"
+              name="cin"
+              value={formData.cin}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="Numéro de CIN"
+            />
+          </div>
+          
+          <div className="form-field mb-6">
+            <label className="form-label">Entreprise :</label>
+            <input
+              type="text"
+              name="company"
+              value={formData.company}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="Nom de l'entreprise"
+            />
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="preview-container border border-gray-200 rounded-md p-6 mb-6 bg-white shadow-sm">
+            <div className="text-right mb-8">
+              <p>Fait à : <span className="font-bold">{formData.location || "........................"}</span></p>
+              <p>Le : <span className="font-bold">{formData.date}</span></p>
+            </div>
+            
+            <div className="mb-8">
+              <p className="mb-2">Nom Et Prénom : <span className="font-bold">{formData.employee?.name || "........................"}</span></p>
+              <p>CIN : <span className="font-bold">{formData.cin || "........................"}</span></p>
+            </div>
+            
+            <div className="mb-8">
+              <h2 className="text-lg font-bold mb-4">Objet : Congé annuel payé</h2>
+              
+              <p className="mb-4">Monsieur,</p>
+              
+              <p className="mb-4">
+                Par la présente, j'atteste que l'entreprise 
+                <span className="font-bold"> {formData.company || "........................"} </span> 
+                m'a accordé six (5) jours de congé payé pour la période du 01/04/2025 au 05/04/2025, 
+                conformément à mes droits aux congés légaux.
+              </p>
+              
+              <p className="mb-4">
+                Veuillez agréer, Monsieur, l'expression de mes salutations distinguées.
+              </p>
+            </div>
+            
+            <div className="flex justify-between mt-10 pt-4 border-t border-gray-200">
+              <div>
+                <p className="text-sm">Signature Salarié</p>
+              </div>
+              <div>
+                <p className="text-sm">Signature Directeur</p>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
       
       <div className="border-t border-gray-200 pt-6 mb-6">
         <h2 className="text-lg font-semibold mb-2">Objet : Congé annuel payé</h2>
@@ -268,14 +378,30 @@ const LeaveForm: React.FC = () => {
         </div>
       </div>
       
-      <div className="mt-10 flex justify-center">
-        <button
+      <div className="mt-10 flex justify-center gap-4">
+        <Button
           onClick={handlePrint}
-          className="print-button flex items-center gap-2"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center gap-2"
         >
           <Printer size={18} />
-          Imprimer le document
-        </button>
+          Imprimer
+        </Button>
+        
+        <Button
+          onClick={handleDownload}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center gap-2"
+        >
+          <Download size={18} />
+          Télécharger
+        </Button>
+        
+        <Button
+          onClick={toggleEdit}
+          className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded flex items-center gap-2"
+        >
+          <Edit size={18} />
+          {isEditing ? "Aperçu" : "Éditer"}
+        </Button>
       </div>
     </div>
   );
