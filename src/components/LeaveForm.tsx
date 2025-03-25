@@ -45,13 +45,13 @@ const LeaveForm: React.FC = () => {
               size: A4;
               margin: 2cm;
             }
-            @import url('https://fonts.googleapis.com/css2?family=Arial:wght@400;700&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman:wght@400;700&display=swap');
             body {
-              font-family: Arial, sans-serif;
+              font-family: 'Times New Roman', Times, serif;
               margin: 0;
               padding: 0;
               font-size: ${forWord ? '12pt' : '14pt'};
-              font-weight: bold;
+              font-weight: normal;
               line-height: 1.6;
             }
             .page {
@@ -67,44 +67,48 @@ const LeaveForm: React.FC = () => {
               page-break-inside: avoid;
             }
             .title {
-              font-size: 24pt;
+              font-size: 22pt;
               font-weight: bold;
-              font-style: italic;
               text-decoration: underline;
               text-align: center;
               margin-bottom: 30px;
+              font-style: italic;
             }
             .date-line {
-              text-align: right;
-              margin: 20px 0 40px 0;
-              font-size: 16pt;
+              text-align: left;
+              margin: 20px 0 25px 0;
+              font-size: 14pt;
             }
             .info-section {
-              margin-bottom: 25px;
+              margin-bottom: 20px;
             }
             .info-line {
               margin-bottom: 15px;
-              font-size: 16pt;
+              font-size: 14pt;
+              font-weight: bold;
             }
             .object-line {
               font-weight: bold;
-              margin: 40px 0 25px 0;
-              font-size: 18pt;
+              margin: 25px 0 15px 0;
+              font-size: 14pt;
             }
             .content {
-              margin: 25px 0;
+              margin: 20px 0;
               text-align: justify;
               line-height: 1.6;
-              font-size: 16pt;
+              font-size: 14pt;
             }
             .signature-section {
               display: flex;
               justify-content: space-between;
-              margin-top: 80px;
+              margin-top: 60px;
             }
             .signature-box {
               width: 40%;
-              font-size: 16pt;
+              font-size: 14pt;
+            }
+            .bold {
+              font-weight: bold;
             }
           </style>
         </head>
@@ -130,7 +134,7 @@ const LeaveForm: React.FC = () => {
                 <div class="info-line">Monsieur,</div>
                 <div class="content">
                   Par la présente, j'atteste que l'entreprise 
-                  ${formData.company || "..........................."}m'a accordé six (5) jours de congé 
+                  <span class="bold">${formData.company || "..."}</span> m'a accordé six (5) jours de congé 
                   payé pour la période du 01/04/2025 au 05/04/2025, 
                   conformément à mes droits aux congés légaux.
                 </div>
@@ -351,70 +355,47 @@ const LeaveForm: React.FC = () => {
       ) : (
         <>
           <div className="preview-container border border-gray-200 rounded-md p-6 mb-6 bg-white shadow-sm">
-            <div className="text-right mb-8">
-              <p>Fait à : <span className="font-bold">{formData.location || "........................"}</span></p>
-              <p>Le : <span className="font-bold">{formData.date}</span></p>
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold italic underline">Autorisation de congé</h2>
             </div>
             
-            <div className="mb-8">
-              <p className="mb-2">Nom Et Prénom : <span className="font-bold">{formData.employee?.name || "........................"}</span></p>
-              <p>CIN : <span className="font-bold">{formData.cin || "........................"}</span></p>
+            <div className="text-left mb-6">
+              <p className="font-['Times_New_Roman'] text-base">Fait à : <span className="font-bold">{formData.location || "............................"}</span> Le : <span className="font-bold">{formData.date}</span></p>
             </div>
             
-            <div className="mb-8">
-              <h2 className="text-lg font-bold mb-4">Objet : Congé annuel payé</h2>
+            <div className="mb-6">
+              <p className="font-['Times_New_Roman'] text-base font-bold mb-2">Nom Et Prénom : {formData.employee?.name || "..........................."}</p>
+              <p className="font-['Times_New_Roman'] text-base font-bold">CIN : {formData.cin || "..........................."}</p>
+            </div>
+            
+            <div className="mb-4">
+              <h3 className="text-base font-bold mb-4">Objet : Congé annuel payé</h3>
               
-              <p className="mb-4">Monsieur,</p>
+              <p className="font-['Times_New_Roman'] text-base font-bold mb-4">Monsieur,</p>
               
-              <p className="mb-4">
+              <p className="font-['Times_New_Roman'] text-base mb-4 text-justify">
                 Par la présente, j'atteste que l'entreprise 
-                <span className="font-bold"> {formData.company || "........................"} </span> 
+                <span className="font-bold"> {formData.company || "..."} </span> 
                 m'a accordé six (5) jours de congé payé pour la période du 01/04/2025 au 05/04/2025, 
                 conformément à mes droits aux congés légaux.
               </p>
               
-              <p className="mb-4">
+              <p className="font-['Times_New_Roman'] text-base mb-4 text-justify">
                 Veuillez agréer, Monsieur, l'expression de mes salutations distinguées.
               </p>
             </div>
             
-            <div className="flex justify-between mt-10 pt-4 border-t border-gray-200">
+            <div className="flex justify-between mt-16 pt-4">
               <div>
-                <p className="text-sm">Signature Salarié</p>
+                <p className="text-base">Signature Salarié</p>
               </div>
               <div>
-                <p className="text-sm">Signature Directeur</p>
+                <p className="text-base">Signature Directeur</p>
               </div>
             </div>
           </div>
         </>
       )}
-      
-      <div className="border-t border-gray-200 pt-6 mb-6">
-        <h2 className="text-lg font-semibold mb-2">Objet : Congé annuel payé</h2>
-        
-        <p className="mb-4">Monsieur,</p>
-        
-        <p className="mb-4">
-          Par la présente, j'atteste que l'entreprise 
-          <span className="font-medium"> {formData.company || "........................"} </span> 
-          m'a accordé six (5) jours de congé payé pour la période du 01/04/2025 au 05/04/2025, 
-          conformément à mes droits aux congés légaux.
-        </p>
-        
-        <p className="mb-4">
-          Veuillez agréer, Monsieur, l'expression de mes salutations distinguées.
-        </p>
-      </div>
-      
-      <div className="flex justify-between mt-10 pt-4 border-t border-gray-200">
-        <div>
-          <p className="text-sm">Signature Salarié</p>
-        </div>
-        <div>
-          <p className="text-sm">Signature Directeur</p>
-        </div>
-      </div>
       
       <div className="mt-10 flex justify-center gap-4 flex-wrap">
         <Button
