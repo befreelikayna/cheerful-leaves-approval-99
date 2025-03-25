@@ -1,3 +1,4 @@
+
 import React, { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Employee, LeaveFormData } from "../models/employeeTypes";
@@ -18,6 +19,13 @@ const LeaveForm: React.FC = () => {
 
   const handleEmployeeChange = (employee: Employee | null) => {
     setFormData({ ...formData, employee });
+    
+    // If employee has a CIN value, set it in the form
+    if (employee?.cin) {
+      setFormData(prev => ({ ...prev, employee, cin: employee.cin }));
+    } else {
+      setFormData(prev => ({ ...prev, employee }));
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,57 +54,62 @@ const LeaveForm: React.FC = () => {
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Autorisation de congé - ${formData.employee?.name}</title>
+          <title>Autorisation de congé</title>
           <style>
             @page {
               size: A4;
-              margin: 2cm;
+              margin: 0;
             }
             body {
               font-family: Times New Roman, serif;
               margin: 0;
               padding: 0;
-              font-size: 12pt;
-              line-height: 1.5;
+              font-size: 11pt;
             }
-            .document {
-              width: 100%;
-              max-width: 21cm;
-              padding: 0;
+            .page {
+              width: 21cm;
+              height: 29.7cm;
+              display: flex;
+              flex-wrap: wrap;
             }
-            .header {
-              text-align: center;
-              margin-bottom: 30px;
+            .a5-document {
+              width: 21cm;
+              height: 14.85cm;
+              padding: 1cm;
+              box-sizing: border-box;
+              page-break-inside: avoid;
             }
             .title {
-              font-size: 16pt;
+              font-size: 14pt;
               font-weight: bold;
               font-style: italic;
               text-decoration: underline;
               text-align: center;
+              margin-bottom: 10px;
             }
             .date-line {
               text-align: right;
-              margin: 20px 0 30px 0;
+              margin: 10px 0 20px 0;
             }
             .info-section {
-              margin-bottom: 20px;
+              margin-bottom: 15px;
             }
             .info-line {
-              margin-bottom: 10px;
+              margin-bottom: 5px;
+              font-weight: normal;
             }
             .object-line {
               font-weight: bold;
-              margin: 25px 0 15px 0;
+              margin: 20px 0 10px 0;
             }
             .content {
-              margin: 20px 0;
+              margin: 15px 0;
               text-align: justify;
             }
             .signature-section {
               display: flex;
               justify-content: space-between;
-              margin-top: 50px;
+              margin-top: 30px;
             }
             .signature-box {
               width: 40%;
@@ -104,44 +117,86 @@ const LeaveForm: React.FC = () => {
           </style>
         </head>
         <body>
-          <div class="document">
-            <div class="header">
+          <div class="page">
+            <!-- First A5 document -->
+            <div class="a5-document">
               <div class="title">Autorisation de congé</div>
-            </div>
-            
-            <div class="date-line">
-              Fait à : ${formData.location || "........................"} Le : ${formData.date}
-            </div>
-            
-            <div class="info-section">
-              <div class="info-line">Nom Et Prénom : ${formData.employee?.name}</div>
-              <div class="info-line">CIN : ${formData.cin}</div>
-            </div>
-            
-            <div class="info-section">
-              <div class="object-line">Objet : Congé annuel payé</div>
-            </div>
-            
-            <div class="info-section">
-              <div class="info-line">Monsieur,</div>
-              <div class="content">
-                Par la présente, j'atteste que l'entreprise 
-                ${formData.company || "........................"} m'a accordé six (5) jours de congé 
-                payé pour la période du 01/04/2025 au 05/04/2025, 
-                conformément à mes droits aux congés légaux.
+              
+              <div class="date-line">
+                Fait à : ${formData.location || "............................"} Le : ${formData.date}
               </div>
-              <div class="content">
-                Veuillez agréer, Monsieur, l'expression de mes 
-                salutations distinguées.
+              
+              <div class="info-section">
+                <div class="info-line">Nom Et Prénom : ${formData.employee?.name || "..........................."}</div>
+                <div class="info-line">CIN : ${formData.cin || "..........................."}</div>
+              </div>
+              
+              <div class="info-section">
+                <div class="object-line">Objet : Congé annuel payé</div>
+              </div>
+              
+              <div class="info-section">
+                <div class="info-line">Monsieur,</div>
+                <div class="content">
+                  Par la présente, j'atteste que l'entreprise 
+                  ${formData.company || "..........................."}m'a accordé six (5) jours de congé 
+                  payé pour la période du 01/04/2025 au 05/04/2025, 
+                  conformément à mes droits aux congés légaux.
+                </div>
+                <div class="content">
+                  Veuillez agréer, Monsieur, l'expression de mes 
+                  salutations distinguées.
+                </div>
+              </div>
+              
+              <div class="signature-section">
+                <div class="signature-box">
+                  <div>Signature Salarié</div>
+                </div>
+                <div class="signature-box">
+                  <div>Signature Directeur</div>
+                </div>
               </div>
             </div>
-            
-            <div class="signature-section">
-              <div class="signature-box">
-                <div>Signature Salarié</div>
+
+            <!-- Second A5 document (duplicate) -->
+            <div class="a5-document">
+              <div class="title">Autorisation de congé</div>
+              
+              <div class="date-line">
+                Fait à : ${formData.location || "............................"} Le : ${formData.date}
               </div>
-              <div class="signature-box">
-                <div>Signature Directeur</div>
+              
+              <div class="info-section">
+                <div class="info-line">Nom Et Prénom : ${formData.employee?.name || "..........................."}</div>
+                <div class="info-line">CIN : ${formData.cin || "..........................."}</div>
+              </div>
+              
+              <div class="info-section">
+                <div class="object-line">Objet : Congé annuel payé</div>
+              </div>
+              
+              <div class="info-section">
+                <div class="info-line">Monsieur,</div>
+                <div class="content">
+                  Par la présente, j'atteste que l'entreprise 
+                  ${formData.company || "..........................."}m'a accordé six (5) jours de congé 
+                  payé pour la période du 01/04/2025 au 05/04/2025, 
+                  conformément à mes droits aux congés légaux.
+                </div>
+                <div class="content">
+                  Veuillez agréer, Monsieur, l'expression de mes 
+                  salutations distinguées.
+                </div>
+              </div>
+              
+              <div class="signature-section">
+                <div class="signature-box">
+                  <div>Signature Salarié</div>
+                </div>
+                <div class="signature-box">
+                  <div>Signature Directeur</div>
+                </div>
               </div>
             </div>
           </div>
