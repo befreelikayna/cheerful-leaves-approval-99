@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Employee, LeaveFormData } from "../models/employeeTypes";
@@ -43,38 +42,56 @@ const LeaveForm: React.FC = () => {
       return;
     }
 
-    const formContent = formRef.current?.innerHTML;
-    
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
         <head>
           <title>Autorisation de congé - ${formData.employee?.name}</title>
           <style>
+            @page {
+              size: A4;
+              margin: 2cm;
+            }
             body {
-              font-family: Arial, sans-serif;
-              margin: 40px;
-              line-height: 1.6;
+              font-family: Times New Roman, serif;
+              margin: 0;
+              padding: 0;
+              font-size: 12pt;
+              line-height: 1.5;
             }
             .document {
-              max-width: 800px;
-              margin: 0 auto;
+              width: 100%;
+              max-width: 21cm;
+              padding: 0;
             }
             .header {
               text-align: center;
               margin-bottom: 30px;
             }
             .title {
-              font-size: 20px;
+              font-size: 16pt;
               font-weight: bold;
               font-style: italic;
               text-decoration: underline;
+              text-align: center;
+            }
+            .date-line {
+              text-align: right;
+              margin: 20px 0 30px 0;
             }
             .info-section {
               margin-bottom: 20px;
             }
             .info-line {
-              margin-bottom: 8px;
+              margin-bottom: 10px;
+            }
+            .object-line {
+              font-weight: bold;
+              margin: 25px 0 15px 0;
+            }
+            .content {
+              margin: 20px 0;
+              text-align: justify;
             }
             .signature-section {
               display: flex;
@@ -82,7 +99,7 @@ const LeaveForm: React.FC = () => {
               margin-top: 50px;
             }
             .signature-box {
-              width: 200px;
+              width: 40%;
             }
           </style>
         </head>
@@ -92,8 +109,8 @@ const LeaveForm: React.FC = () => {
               <div class="title">Autorisation de congé</div>
             </div>
             
-            <div class="info-section">
-              <div class="info-line">Fait à : ${formData.location || "........................"} Le : ${formData.date}</div>
+            <div class="date-line">
+              Fait à : ${formData.location || "........................"} Le : ${formData.date}
             </div>
             
             <div class="info-section">
@@ -102,21 +119,21 @@ const LeaveForm: React.FC = () => {
             </div>
             
             <div class="info-section">
-              <div class="info-line"><strong>Objet : Congé annuel payé</strong></div>
+              <div class="object-line">Objet : Congé annuel payé</div>
             </div>
             
             <div class="info-section">
               <div class="info-line">Monsieur,</div>
-              <p>
+              <div class="content">
                 Par la présente, j'atteste que l'entreprise 
                 ${formData.company || "........................"} m'a accordé six (5) jours de congé 
                 payé pour la période du 01/04/2025 au 05/04/2025, 
                 conformément à mes droits aux congés légaux.
-              </p>
-              <p>
+              </div>
+              <div class="content">
                 Veuillez agréer, Monsieur, l'expression de mes 
                 salutations distinguées.
-              </p>
+              </div>
             </div>
             
             <div class="signature-section">
