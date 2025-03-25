@@ -57,25 +57,25 @@ const LeaveForm: React.FC = () => {
           <title>Autorisation de congé</title>
           <style>
             @page {
-              size: A4;
+              size: A4 landscape;
               margin: 0;
             }
             body {
-              font-family: Times New Roman, serif;
+              font-family: "Times New Roman", serif;
               margin: 0;
               padding: 0;
               font-size: 11pt;
             }
             .page {
-              width: 21cm;
-              height: 29.7cm;
+              width: 29.7cm;
+              height: 21cm;
               display: flex;
-              flex-wrap: wrap;
+              page-break-inside: avoid;
             }
             .a5-document {
-              width: 21cm;
-              height: 14.85cm;
-              padding: 1cm;
+              width: 14.85cm;
+              height: 21cm;
+              padding: 1.5cm;
               box-sizing: border-box;
               page-break-inside: avoid;
             }
@@ -89,27 +89,28 @@ const LeaveForm: React.FC = () => {
             }
             .date-line {
               text-align: right;
-              margin: 10px 0 20px 0;
+              margin: 10px 0 30px 0;
             }
             .info-section {
               margin-bottom: 15px;
             }
             .info-line {
-              margin-bottom: 5px;
+              margin-bottom: 8px;
               font-weight: normal;
             }
             .object-line {
               font-weight: bold;
-              margin: 20px 0 10px 0;
+              margin: 30px 0 15px 0;
             }
             .content {
               margin: 15px 0;
               text-align: justify;
+              line-height: 1.3;
             }
             .signature-section {
               display: flex;
               justify-content: space-between;
-              margin-top: 30px;
+              margin-top: 50px;
             }
             .signature-box {
               width: 40%;
@@ -118,7 +119,7 @@ const LeaveForm: React.FC = () => {
         </head>
         <body>
           <div class="page">
-            <!-- First A5 document -->
+            <!-- First employee form -->
             <div class="a5-document">
               <div class="title">Autorisation de congé</div>
               
@@ -159,7 +160,7 @@ const LeaveForm: React.FC = () => {
               </div>
             </div>
 
-            <!-- Second A5 document (duplicate) -->
+            <!-- Second employee form (can be another employee) -->
             <div class="a5-document">
               <div class="title">Autorisation de congé</div>
               
@@ -168,8 +169,8 @@ const LeaveForm: React.FC = () => {
               </div>
               
               <div class="info-section">
-                <div class="info-line">Nom Et Prénom : ${formData.employee?.name || "..........................."}</div>
-                <div class="info-line">CIN : ${formData.cin || "..........................."}</div>
+                <div class="info-line">Nom Et Prénom : ...........................</div>
+                <div class="info-line">CIN : ...........................</div>
               </div>
               
               <div class="info-section">
