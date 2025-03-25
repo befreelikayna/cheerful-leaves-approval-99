@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Employee, LeaveFormData } from "../models/employeeTypes";
 import EmployeeSelect from "./EmployeeSelect";
+import { employees } from "../data/employees";
 import { Printer } from "lucide-react";
 
 const LeaveForm: React.FC = () => {
@@ -18,7 +19,6 @@ const LeaveForm: React.FC = () => {
   const handleEmployeeChange = (employee: Employee | null) => {
     setFormData({ ...formData, employee });
     
-    // If employee has a CIN value, set it in the form
     if (employee?.cin) {
       setFormData(prev => ({ ...prev, employee, cin: employee.cin }));
     } else {
@@ -162,10 +162,8 @@ const LeaveForm: React.FC = () => {
     
     printWindow.document.close();
     
-    // Give time for resources to load then print
     setTimeout(() => {
       printWindow.print();
-      // Close after print
       printWindow.addEventListener('afterprint', () => {
         printWindow.close();
       });
