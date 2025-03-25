@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Employee, LeaveFormData } from "../models/employeeTypes";
 import EmployeeSelect from "./EmployeeSelect";
 import { employees } from "../data/employees";
-import { Printer, Download, Edit } from "lucide-react";
+import { Printer, Download, Edit, FileText } from "lucide-react";
 import { Button } from "./ui/button";
 
 const LeaveForm: React.FC = () => {
@@ -34,7 +34,7 @@ const LeaveForm: React.FC = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const generateHtml = () => {
+  const generateHtml = (forWord = false) => {
     return `
       <!DOCTYPE html>
       <html>
@@ -50,7 +50,7 @@ const LeaveForm: React.FC = () => {
               font-family: Arial, sans-serif;
               margin: 0;
               padding: 0;
-              font-size: 14pt;
+              font-size: ${forWord ? '12pt' : '14pt'};
               font-weight: bold;
               line-height: 1.6;
             }
@@ -161,10 +161,11 @@ const LeaveForm: React.FC = () => {
       return;
     }
     
-    if (!formData.cin) {
-      toast.error("Veuillez entrer le CIN");
-      return;
-    }
+    // CIN is now optional - removing this validation
+    // if (!formData.cin) {
+    //   toast.error("Veuillez entrer le CIN");
+    //   return;
+    // }
 
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
@@ -192,10 +193,11 @@ const LeaveForm: React.FC = () => {
       return;
     }
     
-    if (!formData.cin) {
-      toast.error("Veuillez entrer le CIN");
-      return;
-    }
+    // CIN is now optional - removing this validation
+    // if (!formData.cin) {
+    //   toast.error("Veuillez entrer le CIN");
+    //   return;
+    // }
 
     // Create a hidden iframe to generate the PDF content
     const iframe = document.createElement('iframe');
@@ -235,6 +237,42 @@ const LeaveForm: React.FC = () => {
         document.body.removeChild(iframe);
       }
     }, 500);
+  };
+
+  const handleDownloadWord = () => {
+    if (!formData.employee) {
+      toast.error("Veuillez sélectionner un employé");
+      return;
+    }
+
+    try {
+      // Create a Blob with the HTML content
+      const htmlContent = generateHtml(true);
+      const blob = new Blob([htmlContent], { type: 'application/msword' });
+      
+      // Create a URL for the Blob
+      const url = URL.createObjectURL(blob);
+      
+      // Create a link and trigger the download
+      const employeeName = formData.employee?.name || "document";
+      const fileName = `autorisation_conge_${employeeName.replace(/\s+/g, '_').toLowerCase()}.doc`;
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+      
+      toast.success("Document Word téléchargé");
+    } catch (error) {
+      toast.error("Erreur lors du téléchargement du document Word");
+    }
   };
 
   const toggleEdit = () => {
@@ -378,7 +416,7 @@ const LeaveForm: React.FC = () => {
         </div>
       </div>
       
-      <div className="mt-10 flex justify-center gap-4">
+      <div className="mt-10 flex justify-center gap-4 flex-wrap">
         <Button
           onClick={handlePrint}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center gap-2"
@@ -392,7 +430,15 @@ const LeaveForm: React.FC = () => {
           className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center gap-2"
         >
           <Download size={18} />
-          Télécharger
+          PDF
+        </Button>
+        
+        <Button
+          onClick={handleDownloadWord}
+          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded flex items-center gap-2"
+        >
+          <FileText size={18} />
+          Word
         </Button>
         
         <Button
