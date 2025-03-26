@@ -14,7 +14,8 @@ import { Printer, Download, FileText, Save, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { companies, getDefaultCompany } from "@/data/companies";
-import { employees, Employee } from "@/data/employees";
+import { employees } from "@/data/employees";
+import { Employee } from "@/models/employeeTypes";
 
 const DocEditor = () => {
   const [documentStyle, setDocumentStyle] = useState({
