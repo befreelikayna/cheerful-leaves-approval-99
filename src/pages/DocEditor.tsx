@@ -10,7 +10,7 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { Printer, Download, FileText, Save, ArrowLeft } from "lucide-react";
+import { Printer, Download, FileText, Save, ArrowLeft, FileExcel } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { companies, getDefaultCompany } from "@/data/companies";
@@ -283,6 +283,49 @@ const DocEditor = () => {
     }
   };
 
+  const handleDownloadExcel = () => {
+    try {
+      // Create simple Excel data in CSV format
+      const csvContent = [
+        ["Document Type", documentContent.title],
+        ["Date", documentContent.date],
+        ["Location", documentContent.location],
+        ["Employee Name", documentContent.name],
+        ["CIN", documentContent.cin],
+        ["Company", documentContent.company],
+        ["Period", documentContent.period],
+        ["Days", documentContent.days],
+        ["Greeting", documentContent.greeting],
+        ["Conclusion", documentContent.conclusion]
+      ]
+        .map(row => row.join(","))
+        .join("\n");
+      
+      // Create a Blob with the CSV content
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      
+      // Create a URL for the Blob
+      const url = URL.createObjectURL(blob);
+      
+      // Create a link and trigger the download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `autorisation_conge_${documentContent.name.replace(/\s+/g, '_').toLowerCase()}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+      
+      toast.success("Document Excel téléchargé");
+    } catch (error) {
+      toast.error("Erreur lors du téléchargement du document Excel");
+    }
+  };
+
   const handleSaveTemplate = () => {
     toast.success("Modèle enregistré avec succès");
   };
@@ -552,7 +595,7 @@ const DocEditor = () => {
               </div>
             </div>
             
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center gap-4 flex-wrap">
               <Button
                 onClick={handlePrint}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center gap-2"
@@ -576,6 +619,14 @@ const DocEditor = () => {
                 <FileText size={18} />
                 Word
               </Button>
+              
+              <Button
+                onClick={handleDownloadExcel}
+                className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded flex items-center gap-2"
+              >
+                <FileExcel size={18} />
+                Excel
+              </Button>
             </div>
           </div>
         </div>
@@ -585,3 +636,4 @@ const DocEditor = () => {
 };
 
 export default DocEditor;
+

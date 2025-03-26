@@ -6,10 +6,11 @@ export interface Company {
 
 export const companies: Company[] = [
   { id: "1", name: "Amayou Stone" },
-  { id: "2", name: "SARL Example" },
-  { id: "3", name: "Atlas Construction" },
-  { id: "4", name: "Maroc Bâtiment" },
-  { id: "5", name: "Casablanca Services" }
+  { id: "2", name: "inedeq" },
+  { id: "3", name: "ranstone" },
+  { id: "4", name: "biostone" },
+  { id: "5", name: "alicante" },
+  { id: "6", name: "cabeza" }
 ];
 
 export const getDefaultCompany = (): Company => {
