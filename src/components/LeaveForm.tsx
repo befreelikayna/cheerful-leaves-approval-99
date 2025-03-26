@@ -1,9 +1,10 @@
+
 import React, { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Employee, LeaveFormData } from "../models/employeeTypes";
 import EmployeeSelect from "./EmployeeSelect";
 import { employees } from "../data/employees";
-import { Printer, Download, Edit, FileText } from "lucide-react";
+import { Printer, Download, Edit, FileText, Copy } from "lucide-react";
 import { Button } from "./ui/button";
 
 const LeaveForm: React.FC = () => {
@@ -33,8 +34,8 @@ const LeaveForm: React.FC = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const generateHtml = (forWord = false) => {
-    return `
+  const generateHtml = (forWord = false, twoPages = false) => {
+    const singlePageHtml = `
       <!DOCTYPE html>
       <html>
         <head>
@@ -156,6 +157,190 @@ const LeaveForm: React.FC = () => {
         </body>
       </html>
     `;
+
+    if (twoPages) {
+      return `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Autorisation de congé</title>
+            <style>
+              @page {
+                size: A4;
+                margin: 2cm;
+              }
+              @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman:wght@400;700&display=swap');
+              body {
+                font-family: 'Times New Roman', Times, serif;
+                margin: 0;
+                padding: 0;
+                font-size: ${forWord ? '12pt' : '14pt'};
+                font-weight: normal;
+                line-height: 1.6;
+              }
+              .page {
+                width: 21cm;
+                height: 29.7cm;
+                padding: 2cm;
+                box-sizing: border-box;
+                page-break-inside: avoid;
+              }
+              .document {
+                width: 100%;
+                height: 100%;
+                page-break-inside: avoid;
+              }
+              .title {
+                font-size: 22pt;
+                font-weight: bold;
+                text-decoration: underline;
+                text-align: center;
+                margin-bottom: 30px;
+                font-style: italic;
+              }
+              .date-line {
+                text-align: left;
+                margin: 20px 0 25px 0;
+                font-size: 14pt;
+              }
+              .info-section {
+                margin-bottom: 20px;
+              }
+              .info-line {
+                margin-bottom: 15px;
+                font-size: 14pt;
+                font-weight: bold;
+              }
+              .object-line {
+                font-weight: bold;
+                margin: 25px 0 15px 0;
+                font-size: 14pt;
+              }
+              .content {
+                margin: 20px 0;
+                text-align: justify;
+                line-height: 1.6;
+                font-size: 14pt;
+              }
+              .signature-section {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 60px;
+              }
+              .signature-box {
+                width: 40%;
+                font-size: 14pt;
+              }
+              .bold {
+                font-weight: bold;
+              }
+              .page-break {
+                page-break-after: always;
+              }
+            </style>
+          </head>
+          <body>
+            <!-- First page -->
+            <div class="page">
+              <div class="document">
+                <div class="title">Autorisation de congé</div>
+                
+                <div class="date-line">
+                  Fait à : ${formData.location || "............................"} Le : ${formData.date}
+                </div>
+                
+                <div class="info-section">
+                  <div class="info-line">Nom Et Prénom : ${formData.employee?.name || "..........................."}</div>
+                  <div class="info-line">CIN : ${formData.cin || "..........................."}</div>
+                </div>
+                
+                <div class="info-section">
+                  <div class="object-line">Objet : Congé annuel payé</div>
+                </div>
+                
+                <div class="info-section">
+                  <div class="info-line">Monsieur,</div>
+                  <div class="content">
+                    Par la présente, j'atteste que l'entreprise 
+                    <span class="bold">${formData.company || "..."}</span> m'a accordé cinq (5) jours de congé 
+                    payé pour la période du 01/04/2025 au 05/04/2025, 
+                    conformément à mes droits aux congés légaux.
+                  </div>
+                  <div class="content">
+                    Veuillez agréer, Monsieur, l'expression de mes 
+                    salutations distinguées.
+                  </div>
+                </div>
+                
+                <div class="signature-section">
+                  <div class="signature-box">
+                    <div>Signature Salarié</div>
+                  </div>
+                  <div class="signature-box">
+                    <div>Signature Directeur</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Page break -->
+            <div class="page-break"></div>
+            
+            <!-- Second page (copy) -->
+            <div class="page">
+              <div class="document">
+                <div class="title">Autorisation de congé</div>
+                
+                <div class="date-line">
+                  Fait à : ${formData.location || "............................"} Le : ${formData.date}
+                </div>
+                
+                <div class="info-section">
+                  <div class="info-line">Nom Et Prénom : ${formData.employee?.name || "..........................."}</div>
+                  <div class="info-line">CIN : ${formData.cin || "..........................."}</div>
+                </div>
+                
+                <div class="info-section">
+                  <div class="object-line">Objet : Congé annuel payé</div>
+                </div>
+                
+                <div class="info-section">
+                  <div class="info-line">Monsieur,</div>
+                  <div class="content">
+                    Par la présente, j'atteste que l'entreprise 
+                    <span class="bold">${formData.company || "..."}</span> m'a accordé cinq (5) jours de congé 
+                    payé pour la période du 01/04/2025 au 05/04/2025, 
+                    conformément à mes droits aux congés légaux.
+                  </div>
+                  <div class="content">
+                    Veuillez agréer, Monsieur, l'expression de mes 
+                    salutations distinguées.
+                  </div>
+                </div>
+                
+                <div class="signature-section">
+                  <div class="signature-box">
+                    <div>Signature Salarié</div>
+                  </div>
+                  <div class="signature-box">
+                    <div>Signature Directeur</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </body>
+        </html>
+      `;
+    }
+
+    return singlePageHtml;
+  };
+
+  const getEmployeeFileName = (type: string, twoPages = false) => {
+    const employeeName = formData.employee?.name || "document";
+    const sanitizedName = employeeName.replace(/\s+/g, '_').toLowerCase();
+    const suffix = twoPages ? "_2pages" : "";
+    return `autorisation_conge_${sanitizedName}${suffix}.${type}`;
   };
 
   const handlePrint = () => {
@@ -164,12 +349,6 @@ const LeaveForm: React.FC = () => {
       return;
     }
     
-    // CIN is now optional - removing this validation
-    // if (!formData.cin) {
-    //   toast.error("Veuillez entrer le CIN");
-    //   return;
-    // }
-
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
       toast.error("Le blocage des popups peut empêcher l'impression. Veuillez les autoriser pour ce site.");
@@ -196,12 +375,6 @@ const LeaveForm: React.FC = () => {
       return;
     }
     
-    // CIN is now optional - removing this validation
-    // if (!formData.cin) {
-    //   toast.error("Veuillez entrer le CIN");
-    //   return;
-    // }
-
     // Create a hidden iframe to generate the PDF content
     const iframe = document.createElement('iframe');
     iframe.style.visibility = 'hidden';
@@ -222,14 +395,58 @@ const LeaveForm: React.FC = () => {
 
     setTimeout(() => {
       try {
-        const employeeName = formData.employee?.name || "document";
-        const fileName = `autorisation_conge_${employeeName.replace(/\s+/g, '_').toLowerCase()}.pdf`;
+        const fileName = getEmployeeFileName("pdf");
 
         // Use browser print to save as PDF
         iframe.contentWindow?.print();
         
         // Display success message
         toast.success("Document téléchargé");
+        
+        // Clean up
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+        }, 1000);
+      } catch (error) {
+        toast.error("Erreur lors du téléchargement du document");
+        document.body.removeChild(iframe);
+      }
+    }, 500);
+  };
+
+  const handleDownload2Pages = () => {
+    if (!formData.employee) {
+      toast.error("Veuillez sélectionner un employé");
+      return;
+    }
+    
+    // Create a hidden iframe to generate the PDF content
+    const iframe = document.createElement('iframe');
+    iframe.style.visibility = 'hidden';
+    iframe.style.position = 'absolute';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    document.body.appendChild(iframe);
+
+    const iframeDocument = iframe.contentDocument || iframe.contentWindow?.document;
+    if (!iframeDocument) {
+      toast.error("Impossible de créer le document");
+      document.body.removeChild(iframe);
+      return;
+    }
+
+    iframeDocument.write(generateHtml(false, true));
+    iframeDocument.close();
+
+    setTimeout(() => {
+      try {
+        const fileName = getEmployeeFileName("pdf", true);
+
+        // Use browser print to save as PDF
+        iframe.contentWindow?.print();
+        
+        // Display success message
+        toast.success("Document 2 pages téléchargé");
         
         // Clean up
         setTimeout(() => {
@@ -257,8 +474,7 @@ const LeaveForm: React.FC = () => {
       const url = URL.createObjectURL(blob);
       
       // Create a link and trigger the download
-      const employeeName = formData.employee?.name || "document";
-      const fileName = `autorisation_conge_${employeeName.replace(/\s+/g, '_').toLowerCase()}.doc`;
+      const fileName = getEmployeeFileName("doc");
       
       const link = document.createElement('a');
       link.href = url;
@@ -275,6 +491,54 @@ const LeaveForm: React.FC = () => {
       toast.success("Document Word téléchargé");
     } catch (error) {
       toast.error("Erreur lors du téléchargement du document Word");
+    }
+  };
+
+  const handleDownloadExcel = () => {
+    if (!formData.employee) {
+      toast.error("Veuillez sélectionner un employé");
+      return;
+    }
+
+    try {
+      // Create simple Excel data in CSV format
+      const csvContent = [
+        ["Document Type", "Autorisation de congé"],
+        ["Date", formData.date],
+        ["Lieu", formData.location],
+        ["Nom Et Prénom", formData.employee?.name || ""],
+        ["CIN", formData.cin || ""],
+        ["Entreprise", formData.company || ""],
+        ["Période", "du 01/04/2025 au 05/04/2025"],
+        ["Jours", "cinq (5)"],
+      ]
+        .map(row => row.join(","))
+        .join("\n");
+      
+      // Create a Blob with the CSV content
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      
+      // Create a URL for the Blob
+      const url = URL.createObjectURL(blob);
+      
+      // Create a link and trigger the download
+      const fileName = getEmployeeFileName("csv");
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+      
+      toast.success("Document Excel téléchargé");
+    } catch (error) {
+      toast.error("Erreur lors du téléchargement du document Excel");
     }
   };
 
@@ -414,11 +678,27 @@ const LeaveForm: React.FC = () => {
         </Button>
         
         <Button
+          onClick={handleDownload2Pages}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center gap-2"
+        >
+          <Copy size={18} />
+          PDF 2 pages
+        </Button>
+        
+        <Button
           onClick={handleDownloadWord}
           className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded flex items-center gap-2"
         >
           <FileText size={18} />
           Word
+        </Button>
+        
+        <Button
+          onClick={handleDownloadExcel}
+          className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded flex items-center gap-2"
+        >
+          <FileText size={18} />
+          Excel
         </Button>
         
         <Button
