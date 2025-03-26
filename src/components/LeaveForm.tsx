@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Employee, LeaveFormData } from "../models/employeeTypes";
@@ -134,7 +133,7 @@ const LeaveForm: React.FC = () => {
                 <div class="info-line">Monsieur,</div>
                 <div class="content">
                   Par la présente, j'atteste que l'entreprise 
-                  <span class="bold">${formData.company || "..."}</span> m'a accordé six (5) jours de congé 
+                  <span class="bold">${formData.company || "..."}</span> m'a accordé cinq (5) jours de congé 
                   payé pour la période du 01/04/2025 au 05/04/2025, 
                   conformément à mes droits aux congés légaux.
                 </div>
@@ -376,7 +375,7 @@ const LeaveForm: React.FC = () => {
               <p className="font-['Times_New_Roman'] text-base mb-4 text-justify">
                 Par la présente, j'atteste que l'entreprise 
                 <span className="font-bold"> {formData.company || "..."} </span> 
-                m'a accordé six (5) jours de congé payé pour la période du 01/04/2025 au 05/04/2025, 
+                m'a accordé cinq (5) jours de congé payé pour la période du 01/04/2025 au 05/04/2025, 
                 conformément à mes droits aux congés légaux.
               </p>
               
