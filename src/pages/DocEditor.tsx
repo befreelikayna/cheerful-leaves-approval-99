@@ -10,7 +10,7 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { Printer, Download, FileText, Save, ArrowLeft, FileSpreadsheet } from "lucide-react";
+import { Printer, Download, FileText, Save, ArrowLeft, FileSpreadsheet, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { companies, getDefaultCompany } from "@/data/companies";
@@ -71,8 +71,8 @@ const DocEditor = () => {
     }
   };
 
-  const generateHtml = (forWord = false) => {
-    return `
+  const generateHtml = (forWord = false, twoPages = false) => {
+    const singlePageHtml = `
       <!DOCTYPE html>
       <html>
         <head>
@@ -147,6 +147,9 @@ const DocEditor = () => {
             .bold {
               font-weight: bold;
             }
+            .page-break {
+              page-break-after: always;
+            }
           </style>
         </head>
         <body>
@@ -193,6 +196,181 @@ const DocEditor = () => {
         </body>
       </html>
     `;
+
+    if (twoPages) {
+      return `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>${documentContent.title}</title>
+            <style>
+              @page {
+                size: A4;
+                margin: ${documentStyle.margins}cm;
+              }
+              @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman:wght@400;700&display=swap');
+              body {
+                font-family: '${documentStyle.font}', Times, serif;
+                margin: 0;
+                padding: 0;
+                font-size: ${documentStyle.contentSize}pt;
+                font-weight: normal;
+                line-height: ${documentStyle.lineHeight};
+              }
+              .page {
+                width: 21cm;
+                height: 29.7cm;
+                padding: ${documentStyle.margins}cm;
+                box-sizing: border-box;
+                page-break-inside: avoid;
+              }
+              .document {
+                width: 100%;
+                height: 100%;
+                page-break-inside: avoid;
+              }
+              .title {
+                font-size: ${documentStyle.titleSize}pt;
+                font-weight: bold;
+                text-decoration: underline;
+                text-align: center;
+                margin-bottom: 30px;
+                font-style: italic;
+              }
+              .date-line {
+                text-align: left;
+                margin: 20px 0 25px 0;
+                font-size: ${documentStyle.contentSize}pt;
+              }
+              .info-section {
+                margin-bottom: 20px;
+              }
+              .info-line {
+                margin-bottom: 15px;
+                font-size: ${documentStyle.contentSize}pt;
+                font-weight: bold;
+              }
+              .object-line {
+                font-weight: bold;
+                margin: 25px 0 15px 0;
+                font-size: ${documentStyle.contentSize}pt;
+              }
+              .content {
+                margin: 20px 0;
+                text-align: justify;
+                line-height: ${documentStyle.lineHeight};
+                font-size: ${documentStyle.contentSize}pt;
+              }
+              .signature-section {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 60px;
+              }
+              .signature-box {
+                width: 40%;
+                font-size: ${documentStyle.contentSize}pt;
+              }
+              .bold {
+                font-weight: bold;
+              }
+              .page-break {
+                page-break-after: always;
+              }
+            </style>
+          </head>
+          <body>
+            <!-- First page -->
+            <div class="page">
+              <div class="document">
+                <div class="title">${documentContent.title}</div>
+                
+                <div class="date-line">
+                  Fait à : ${documentContent.location} Le : ${documentContent.date}
+                </div>
+                
+                <div class="info-section">
+                  <div class="info-line">Nom Et Prénom : ${documentContent.name}</div>
+                  <div class="info-line">CIN : ${documentContent.cin}</div>
+                </div>
+                
+                <div class="info-section">
+                  <div class="object-line">Objet : Congé annuel payé</div>
+                </div>
+                
+                <div class="info-section">
+                  <div class="info-line">${documentContent.greeting},</div>
+                  <div class="content">
+                    Par la présente, j'atteste que l'entreprise 
+                    <span class="bold"> ${documentContent.company} </span> m'a accordé ${documentContent.days} jours de congé 
+                    payé pour la période ${documentContent.period}, 
+                    conformément à mes droits aux congés légaux.
+                  </div>
+                  <div class="content">
+                    ${documentContent.conclusion}
+                  </div>
+                </div>
+                
+                <div class="signature-section">
+                  <div class="signature-box">
+                    <div>Signature Salarié</div>
+                  </div>
+                  <div class="signature-box">
+                    <div>Signature Directeur</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Page break -->
+            <div class="page-break"></div>
+            
+            <!-- Second page (copy) -->
+            <div class="page">
+              <div class="document">
+                <div class="title">${documentContent.title}</div>
+                
+                <div class="date-line">
+                  Fait à : ${documentContent.location} Le : ${documentContent.date}
+                </div>
+                
+                <div class="info-section">
+                  <div class="info-line">Nom Et Prénom : ${documentContent.name}</div>
+                  <div class="info-line">CIN : ${documentContent.cin}</div>
+                </div>
+                
+                <div class="info-section">
+                  <div class="object-line">Objet : Congé annuel payé</div>
+                </div>
+                
+                <div class="info-section">
+                  <div class="info-line">${documentContent.greeting},</div>
+                  <div class="content">
+                    Par la présente, j'atteste que l'entreprise 
+                    <span class="bold"> ${documentContent.company} </span> m'a accordé ${documentContent.days} jours de congé 
+                    payé pour la période ${documentContent.period}, 
+                    conformément à mes droits aux congés légaux.
+                  </div>
+                  <div class="content">
+                    ${documentContent.conclusion}
+                  </div>
+                </div>
+                
+                <div class="signature-section">
+                  <div class="signature-box">
+                    <div>Signature Salarié</div>
+                  </div>
+                  <div class="signature-box">
+                    <div>Signature Directeur</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </body>
+        </html>
+      `;
+    }
+
+    return singlePageHtml;
   };
 
   const handlePreview = () => {
@@ -247,6 +425,42 @@ const DocEditor = () => {
         iframe.contentWindow?.print();
         
         toast.success("Document téléchargé");
+        
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+        }, 1000);
+      } catch (error) {
+        toast.error("Erreur lors du téléchargement du document");
+        document.body.removeChild(iframe);
+      }
+    }, 500);
+  };
+
+  const handleDownloadPDF2Pages = () => {
+    const iframe = document.createElement('iframe');
+    iframe.style.visibility = 'hidden';
+    iframe.style.position = 'absolute';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    document.body.appendChild(iframe);
+
+    const iframeDocument = iframe.contentDocument || iframe.contentWindow?.document;
+    if (!iframeDocument) {
+      toast.error("Impossible de créer le document");
+      document.body.removeChild(iframe);
+      return;
+    }
+
+    iframeDocument.write(generateHtml(false, true));
+    iframeDocument.close();
+
+    setTimeout(() => {
+      try {
+        const fileName = `autorisation_conge_${documentContent.name.replace(/\s+/g, '_').toLowerCase()}_2pages.pdf`;
+
+        iframe.contentWindow?.print();
+        
+        toast.success("Document 2 pages téléchargé");
         
         setTimeout(() => {
           document.body.removeChild(iframe);
@@ -610,6 +824,14 @@ const DocEditor = () => {
               >
                 <Download size={18} />
                 PDF
+              </Button>
+              
+              <Button
+                onClick={handleDownloadPDF2Pages}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center gap-2"
+              >
+                <Copy size={18} />
+                PDF 2 pages
               </Button>
               
               <Button
