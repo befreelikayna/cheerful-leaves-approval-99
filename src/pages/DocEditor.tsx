@@ -1,5 +1,4 @@
-
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -14,6 +13,7 @@ import {
 import { Printer, Download, FileText, Save, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+import { companies, getDefaultCompany } from "@/data/companies";
 
 const DocEditor = () => {
   const [documentStyle, setDocumentStyle] = useState({
@@ -30,7 +30,7 @@ const DocEditor = () => {
     date: "25/03/2025",
     name: "Ahmed Benani",
     cin: "AB123456",
-    company: "SARL Example",
+    company: getDefaultCompany().name,
     period: "du 01/04/2025 au 05/04/2025",
     days: "cinq (5)",
     greeting: "Monsieur",
@@ -38,6 +38,10 @@ const DocEditor = () => {
   });
 
   const previewRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    handlePreview();
+  }, []);
 
   const handleStyleChange = (field: string, value: string) => {
     setDocumentStyle({
@@ -205,7 +209,6 @@ const DocEditor = () => {
   };
 
   const handleDownloadPDF = () => {
-    // Create a hidden iframe to generate the PDF content
     const iframe = document.createElement('iframe');
     iframe.style.visibility = 'hidden';
     iframe.style.position = 'absolute';
@@ -227,13 +230,10 @@ const DocEditor = () => {
       try {
         const fileName = `autorisation_conge_${documentContent.name.replace(/\s+/g, '_').toLowerCase()}.pdf`;
 
-        // Use browser print to save as PDF
         iframe.contentWindow?.print();
         
-        // Display success message
         toast.success("Document téléchargé");
         
-        // Clean up
         setTimeout(() => {
           document.body.removeChild(iframe);
         }, 1000);
@@ -246,23 +246,18 @@ const DocEditor = () => {
 
   const handleDownloadWord = () => {
     try {
-      // Create a Blob with the HTML content
       const htmlContent = generateHtml(true);
       const blob = new Blob([htmlContent], { type: 'application/msword' });
       
-      // Create a URL for the Blob
       const url = URL.createObjectURL(blob);
-      
-      // Create a link and trigger the download
-      const fileName = `autorisation_conge_${documentContent.name.replace(/\s+/g, '_').toLowerCase()}.doc`;
       
       const link = document.createElement('a');
       link.href = url;
-      link.download = fileName;
+      link.download = `autorisation_conge_${documentContent.name.replace(/\s+/g, '_').toLowerCase()}.doc`;
+      
       document.body.appendChild(link);
       link.click();
       
-      // Clean up
       setTimeout(() => {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
@@ -275,8 +270,6 @@ const DocEditor = () => {
   };
 
   const handleSaveTemplate = () => {
-    // This would normally save to a database or local storage
-    // For now, we'll just show a toast
     toast.success("Modèle enregistré avec succès");
   };
 
@@ -291,7 +284,7 @@ const DocEditor = () => {
           <h1 className="text-3xl font-semibold text-gray-900">
             Éditeur de Document
           </h1>
-          <div></div> {/* Empty div for alignment */}
+          <div></div>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -413,10 +406,19 @@ const DocEditor = () => {
                 
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-700">Entreprise</label>
-                  <Input 
+                  <Select 
                     value={documentContent.company}
-                    onChange={(e) => handleContentChange('company', e.target.value)}
-                  />
+                    onValueChange={(value) => handleContentChange('company', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner une entreprise" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {companies.map((company) => (
+                        <SelectItem key={company.id} value={company.name}>{company.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
