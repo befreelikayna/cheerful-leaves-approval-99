@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Employee, LeaveFormData } from "../models/employeeTypes";
@@ -375,43 +374,31 @@ const LeaveForm: React.FC = () => {
       return;
     }
     
-    // Create a hidden iframe to generate the PDF content
-    const iframe = document.createElement('iframe');
-    iframe.style.visibility = 'hidden';
-    iframe.style.position = 'absolute';
-    iframe.style.width = '0';
-    iframe.style.height = '0';
-    document.body.appendChild(iframe);
-
-    const iframeDocument = iframe.contentDocument || iframe.contentWindow?.document;
-    if (!iframeDocument) {
-      toast.error("Impossible de créer le document");
-      document.body.removeChild(iframe);
-      return;
+    try {
+      // Create a Blob from the HTML content
+      const htmlContent = generateHtml();
+      const blob = new Blob([htmlContent], { type: 'application/pdf' });
+      
+      // Create download link
+      const url = URL.createObjectURL(blob);
+      const fileName = getEmployeeFileName("pdf");
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+      
+      toast.success("Document PDF téléchargé");
+    } catch (error) {
+      toast.error("Erreur lors du téléchargement du document PDF");
     }
-
-    iframeDocument.write(generateHtml());
-    iframeDocument.close();
-
-    setTimeout(() => {
-      try {
-        const fileName = getEmployeeFileName("pdf");
-
-        // Use browser print to save as PDF
-        iframe.contentWindow?.print();
-        
-        // Display success message
-        toast.success("Document téléchargé");
-        
-        // Clean up
-        setTimeout(() => {
-          document.body.removeChild(iframe);
-        }, 1000);
-      } catch (error) {
-        toast.error("Erreur lors du téléchargement du document");
-        document.body.removeChild(iframe);
-      }
-    }, 500);
   };
 
   const handleDownload2Pages = () => {
@@ -420,43 +407,31 @@ const LeaveForm: React.FC = () => {
       return;
     }
     
-    // Create a hidden iframe to generate the PDF content
-    const iframe = document.createElement('iframe');
-    iframe.style.visibility = 'hidden';
-    iframe.style.position = 'absolute';
-    iframe.style.width = '0';
-    iframe.style.height = '0';
-    document.body.appendChild(iframe);
-
-    const iframeDocument = iframe.contentDocument || iframe.contentWindow?.document;
-    if (!iframeDocument) {
-      toast.error("Impossible de créer le document");
-      document.body.removeChild(iframe);
-      return;
+    try {
+      // Create a Blob from the HTML content with 2 pages
+      const htmlContent = generateHtml(false, true);
+      const blob = new Blob([htmlContent], { type: 'application/pdf' });
+      
+      // Create download link
+      const url = URL.createObjectURL(blob);
+      const fileName = getEmployeeFileName("pdf", true);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+      
+      toast.success("Document PDF 2 pages téléchargé");
+    } catch (error) {
+      toast.error("Erreur lors du téléchargement du document PDF 2 pages");
     }
-
-    iframeDocument.write(generateHtml(false, true));
-    iframeDocument.close();
-
-    setTimeout(() => {
-      try {
-        const fileName = getEmployeeFileName("pdf", true);
-
-        // Use browser print to save as PDF
-        iframe.contentWindow?.print();
-        
-        // Display success message
-        toast.success("Document 2 pages téléchargé");
-        
-        // Clean up
-        setTimeout(() => {
-          document.body.removeChild(iframe);
-        }, 1000);
-      } catch (error) {
-        toast.error("Erreur lors du téléchargement du document");
-        document.body.removeChild(iframe);
-      }
-    }, 500);
   };
 
   const handleDownloadWord = () => {
