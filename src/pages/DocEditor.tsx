@@ -19,11 +19,11 @@ import { Employee } from "@/models/employeeTypes";
 
 const DocEditor = () => {
   const [documentStyle, setDocumentStyle] = useState({
-    font: "Times New Roman",
-    titleSize: "22",
-    contentSize: "14",
-    margins: "2",
-    lineHeight: "1.6",
+    font: "Georgia",
+    titleSize: "25",
+    contentSize: "18",
+    margins: "1.5",
+    lineHeight: "2.7",
   });
 
   const [documentContent, setDocumentContent] = useState({
