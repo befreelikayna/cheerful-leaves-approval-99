@@ -10,7 +10,7 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { Printer, Download, FileText, Save, ArrowLeft, FileExcel } from "lucide-react";
+import { Printer, Download, FileText, Save, ArrowLeft, FileSpreadsheet } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { companies, getDefaultCompany } from "@/data/companies";
@@ -624,7 +624,7 @@ const DocEditor = () => {
                 onClick={handleDownloadExcel}
                 className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded flex items-center gap-2"
               >
-                <FileExcel size={18} />
+                <FileSpreadsheet size={18} />
                 Excel
               </Button>
             </div>
@@ -636,4 +636,3 @@ const DocEditor = () => {
 };
 
 export default DocEditor;
-
