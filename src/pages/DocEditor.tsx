@@ -14,6 +14,7 @@ import { Printer, Download, FileText, Save, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { companies, getDefaultCompany } from "@/data/companies";
+import { employees, Employee } from "@/data/employees";
 
 const DocEditor = () => {
   const [documentStyle, setDocumentStyle] = useState({
@@ -28,8 +29,8 @@ const DocEditor = () => {
     title: "Autorisation de congé",
     location: "Casablanca",
     date: "25/03/2025",
-    name: "Ahmed Benani",
-    cin: "AB123456",
+    name: "",
+    cin: "",
     company: getDefaultCompany().name,
     period: "du 01/04/2025 au 05/04/2025",
     days: "cinq (5)",
@@ -55,6 +56,18 @@ const DocEditor = () => {
       ...documentContent,
       [field]: value
     });
+  };
+
+  const handleEmployeeChange = (employeeId: string) => {
+    const selectedEmployee = employees.find(e => e.id.toString() === employeeId);
+    
+    if (selectedEmployee) {
+      setDocumentContent({
+        ...documentContent,
+        name: selectedEmployee.name,
+        cin: "" // Leave CIN empty as requested
+      });
+    }
   };
 
   const generateHtml = (forWord = false) => {
@@ -390,10 +403,19 @@ const DocEditor = () => {
                 
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-700">Nom et Prénom</label>
-                  <Input 
-                    value={documentContent.name}
-                    onChange={(e) => handleContentChange('name', e.target.value)}
-                  />
+                  <Select 
+                    value={documentContent.name ? employees.find(e => e.name === documentContent.name)?.id.toString() : ""}
+                    onValueChange={handleEmployeeChange}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner un employé" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {employees.map((employee) => (
+                        <SelectItem key={employee.id} value={employee.id.toString()}>{employee.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 
                 <div>
@@ -401,6 +423,7 @@ const DocEditor = () => {
                   <Input 
                     value={documentContent.cin}
                     onChange={(e) => handleContentChange('cin', e.target.value)}
+                    placeholder="Numéro de CIN (optionnel)"
                   />
                 </div>
                 
