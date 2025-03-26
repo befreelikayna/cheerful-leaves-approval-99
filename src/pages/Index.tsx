@@ -14,7 +14,7 @@ const Index = () => {
             Gestion des Autorisations de Congé
           </h1>
           <p className="text-gray-600 max-w-xl mx-auto mb-6">
-            Sélectionnez un employé, complétez les informations et imprimez l'autorisation de congé.
+            Sélectionnez un employé, complétez les informations et générez l'autorisation de congé.
           </p>
           
           <Link to="/editor">
